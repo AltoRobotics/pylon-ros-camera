@@ -1506,21 +1506,23 @@ std::string PylonROS2GigECamera::gammaEnable(const bool& enable)
 template <> 
 float PylonROS2GigECamera::getTemperature()
 {
-    try
-    {
-        if ( GenApi::IsAvailable(cam_->TemperatureAbs) )
-        {  
-            return static_cast<float>(cam_->TemperatureAbs.GetValue());   
-        }
-        else 
-        {
-             return 0.0;
-        }
+  try
+  {
+    if(GenApi::IsAvailable(cam_->DeviceTemperatureSelector) && GenApi::IsAvailable(cam_->DeviceTemperature)){
+      cam_->DeviceTemperatureSelector.SetValue(Basler_UniversalCameraParams::DeviceTemperatureSelector_Coreboard);
+  
+      float temperature = static_cast<float>(cam_->DeviceTemperature.GetValue());
+
+      return temperature;
     }
-    catch ( const GenICam::GenericException &e )
-    {
-        return 0.0;
+    else{
+      return 0.0;
     }
+  }
+  catch(const GenICam::GenericException &e)
+  {
+      return 0.0;
+  }
 }
 
 template <> 
